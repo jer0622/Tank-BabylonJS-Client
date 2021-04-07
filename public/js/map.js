@@ -1,21 +1,21 @@
-export function loadMap(scene) {
+export async function loadMap(scene) {
 
-    const groundOptions = { width:2000, height:2000, subdivisions:20, minHeight:0, maxHeight:100, onReady: onGroundCreated};
-    //scene is optional and defaults to the current scene
-    const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", 'assets/images/hmap2.jpg', groundOptions, scene); 
 
-    function onGroundCreated() {
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = new BABYLON.Texture("assets/images/grass.jpg");
-        ground.material = groundMaterial;
-        // to be taken into account by collision detection
-        ground.checkCollisions = true;
-        ground.applyGravity = true;
-        //groundMaterial.wireframe=true;
-    }
+    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/", "map.glb", scene);
+    let map = result.meshes[0];
 
+    
+    map.position = new BABYLON.Vector3(0, 0, 0);
+
+    let allMeshes = map.getChildMeshes();
+    allMeshes.forEach(m => {
+        //m.receiveShadows = true;
+        m.checkCollisions = true;
+    });
+
+    scene.getMeshByName("sea").material.needDepthPrePass = true;
+    scene.getLightByName("Sun").intensity = 12;
+    
 
     let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(-1, -1, 0), scene);
-
-    return ground;
 };

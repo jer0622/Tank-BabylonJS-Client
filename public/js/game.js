@@ -8,6 +8,7 @@ let scene;
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", async function() {
+    await Ammo();
     await startGame("renderCanvas");
 }, false);
 
@@ -21,13 +22,16 @@ async function startGame(canvasId) {
     scene = createScene();
 
     // On charge la map
-    var map = loadMap(scene);
+    var map = await loadMap(scene);
 
     // On crée le tank (le joueur principale)
     let tank = new Tank();
     await tank.build(scene, canvas);
-    
 
+
+    // On active la physique
+    scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), new BABYLON.AmmoJSPlugin());
+    
 
     // Permet au jeu de tourner
     engine.runRenderLoop(() => {
@@ -37,9 +41,11 @@ async function startGame(canvasId) {
         // Déplace le joueur (le tank)
         tank.checkMoveTank(deltaTime);
 
-
         // Anime le tank en fonction des ses déplacement
         tank.animateTank();
+
+        // Check des armes du tank
+        tank.checkWeapons();
 
 
 
@@ -60,7 +66,7 @@ async function startGame(canvasId) {
 function createScene(engine) {
     let scene = new BABYLON.Scene(engine);
     scene.clearColor = new BABYLON.Color3(4, 0.9, 0.9);
-    scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
+    scene.gravity = new BABYLON.Vector3(0, -10, 0);
     scene.collisionsEnabled = true;
     return scene;
 }
