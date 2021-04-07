@@ -18,7 +18,6 @@ export default class Tank {
         // On prépare les armes
         this.#prepareWeapons(scene);
         
-
         // On crée une caméra qui suit le tank
         let followCamera = this.#createFollowCamera(scene, this.tank);
     }
@@ -63,7 +62,7 @@ export default class Tank {
         camera.rotationOffset = 180;        // the viewing angle
         camera.cameraAcceleration = .1;     // how fast to move
         camera.maxCameraSpeed = 5;          // speed limit
-        camera.fov = 1.2;
+        camera.fov = 1;
     
         scene.activeCamera = camera;
         return camera;
@@ -164,31 +163,30 @@ export default class Tank {
 
     // Permet au tank de tirer
     checkWeapons() {
-        this.scene.onPointerDown = (evt, pickResulte) => {
-            if (pickResulte.pickedMesh && pickResulte.pickedMesh.metadata === "tank") {                
-                var cannonBallClone = this.cannonBall.clone("cannonBallClone")
-                cannonBallClone.visibility = 1;
-                cannonBallClone.checkCollisions = false;
-                cannonBallClone.position = pickResulte.pickedMesh.absolutePosition;
-                cannonBallClone.physicsImpostor = new BABYLON.PhysicsImpostor(cannonBallClone, BABYLON.PhysicsImpostor.SphereImpostor, {mass:2, friction:0.5, restitution:0}, this.scene);
-                cannonBallClone.physicsImpostor.applyImpulse(pickResulte.pickedMesh.up.scale(140), BABYLON.Vector3.Zero());
-                cannonBallClone.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 20, 0), BABYLON.Vector3.Zero());
+        if (this.axisMovement[4] === true) {  
+            let meshTank = this.scene.getMeshByName("Capsule");
+            var cannonBallClone = this.cannonBall.clone("cannonBallClone")
+            cannonBallClone.visibility = 1;
+            cannonBallClone.checkCollisions = false;
+            cannonBallClone.position = meshTank.absolutePosition;
+            cannonBallClone.physicsImpostor = new BABYLON.PhysicsImpostor(cannonBallClone, BABYLON.PhysicsImpostor.SphereImpostor, {mass:2, friction:0.5, restitution:0}, this.scene);
+            cannonBallClone.physicsImpostor.applyImpulse(meshTank.up.scale(140), BABYLON.Vector3.Zero());
+            cannonBallClone.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 20, 0), BABYLON.Vector3.Zero());
                             
-                //create an action manager for the cannonBallClone that will fire when intersecting the killbox. It will then dispose of the cannonBallClone.
-                cannonBallClone.actionManager = new BABYLON.ActionManager(this.scene);
-                
-                cannonBallClone.actionManager.registerAction(
-                    new BABYLON.ExecuteCodeAction(
-                        {
-                            trigger:BABYLON.ActionManager.OnIntersectionEnterTrigger,
-                            parameter:this.killBox
-                        }, 
-                        function(){
-                            cannonBallClone.dispose();
-                        }
-                    )
-                );
-            } 
-        }
+            //create an action manager for the cannonBallClone that will fire when intersecting the killbox. It will then dispose of the cannonBallClone.
+            cannonBallClone.actionManager = new BABYLON.ActionManager(this.scene);
+            
+            cannonBallClone.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger:BABYLON.ActionManager.OnIntersectionEnterTrigger,
+                        parameter:this.killBox
+                    }, 
+                    function(){
+                        cannonBallClone.dispose();
+                    }
+                )
+            );
+        } 
     }
 }
