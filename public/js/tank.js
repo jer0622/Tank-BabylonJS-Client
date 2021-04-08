@@ -9,12 +9,19 @@ export default class Tank {
         this.axisMovement = [false, false, false, false, false];
         this.#addListenerMovement();
 
+        // MOUVEMENT TOURELLE PROVISOIRE
+        this.axisTourelle = [false, false, false, false];
+        this.#addListenerTourelle();
+
         // Vitesse de déplacement du tank
         this.speed = 0.8;
 
         // On crée le tank avec la caméra qui le suit
         await this.#createTank(scene);
         let followCamera = this.#createFollowCamera(scene, this.tank);
+
+        //let camera = new BABYLON.FreeCamera("free", new BABYLON.Vector3(30, 20, -10), scene);
+        //camera.attachControl(canvas);
 
         // On prépare les armes
         this.#prepareWeapons(scene);
@@ -24,6 +31,9 @@ export default class Tank {
     checkActionTank(deltaTime) {
         // Déplace le joueur (le tank)
         this.#checkMoveTank(deltaTime);
+
+        // Rotation de la tourelle
+        this.#checkMoveTourelle();
 
         // Anime le tank en fonction des ses déplacement
         this.#animateTank();
@@ -50,8 +60,15 @@ export default class Tank {
 
         let allMeshes = tank.getChildMeshes();
         allMeshes.forEach(m => {
+            if (m.name == "Cannon" || m.name == "Tourelle") {
+                m.rotation = m.rotationQuaternion.toEulerAngles();
+            }
             m.metadata = "tank";
         });
+
+        // On récupère les mesh du cannon et de la tourelle (pour tirer et déplacer la tourelle)
+        this.meshCannon = this.scene.getMeshByName("Cannon");
+        this.meshTourelle = this.scene.getMeshByName("Tourelle");
 
         // On défini le patron comme parent au tank
         tank.parent = patronTank;
@@ -109,6 +126,24 @@ export default class Tank {
         this.tank.moveWithCollisions(new BABYLON.Vector3(0,(-1.5) * relativeSpeed ,0));
     }
 
+
+    #checkMoveTourelle() {
+        if (this.axisTourelle[0] === true) {
+            this.meshCannon.rotation.x -= 0.1;
+        }
+        if (this.axisTourelle[1] === true) {
+            this.meshCannon.rotation.x += 0.1;
+        }
+        if (this.axisTourelle[2] === true) {
+            this.meshCannon.rotation.y -= 0.1;
+            this.meshTourelle.rotation.y -= 0.1;
+        }
+        if (this.axisTourelle[3] === true) {
+            this.meshCannon.rotation.y += 0.1;
+            this.meshTourelle.rotation.y += 0.1;
+        }
+    }
+
     // Animation du tank
     #animateTank() {
         // Animation de déplacement
@@ -150,13 +185,12 @@ export default class Tank {
     // Permet au tank de tirer
     #checkWeapons() {
         if (this.axisMovement[4] === true && this.tireEnable === true) {  
-            let meshTank = this.scene.getMeshByName("Capsule");
             var cannonBallClone = this.cannonBall.clone("cannonBallClone")
             cannonBallClone.visibility = 1;
             cannonBallClone.checkCollisions = false;
-            cannonBallClone.position = meshTank.absolutePosition;
+            cannonBallClone.position = this.meshCannon.absolutePosition;
             cannonBallClone.physicsImpostor = new BABYLON.PhysicsImpostor(cannonBallClone, BABYLON.PhysicsImpostor.SphereImpostor, {mass:2, friction:0.5, restitution:0}, this.scene);
-            cannonBallClone.physicsImpostor.applyImpulse(meshTank.up.scale(140), BABYLON.Vector3.Zero());
+            cannonBallClone.physicsImpostor.applyImpulse(this.meshCannon.up.scale(140), BABYLON.Vector3.Zero());
             cannonBallClone.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 20, 0), BABYLON.Vector3.Zero());
                             
             //create an action manager for the cannonBallClone that will fire when intersecting the killbox. It will then dispose of the cannonBallClone.
@@ -209,6 +243,34 @@ export default class Tank {
                 this.axisMovement[3] = false;
             } else if (event.key === " ") {
                 this.axisMovement[4] = false;
+            }
+        }, false);
+    }
+
+
+    // FONCTION PROVISOIRE
+    #addListenerTourelle() {
+        window.addEventListener('keydown', (event) => {
+            if (event.key === "ArrowUp") {
+                this.axisTourelle[0] = true;
+            } else if (event.key === "ArrowDown") {
+                this.axisTourelle[1] = true;
+            } else if (event.key === "ArrowRight") {
+                this.axisTourelle[2] = true;
+            } else if (event.key === "ArrowLeft") {
+                this.axisTourelle[3] = true;
+            }
+        }, false);
+
+        window.addEventListener('keyup', (event) => {
+            if (event.key === "ArrowUp") {
+                this.axisTourelle[0] = false;
+            } else if (event.key === "ArrowDown") {
+                this.axisTourelle[1] = false;
+            } else if (event.key === "ArrowRight") {
+                this.axisTourelle[2] = false;
+            } else if (event.key === "ArrowLeft") {
+                this.axisTourelle[3] = false;
             }
         }, false);
     }
