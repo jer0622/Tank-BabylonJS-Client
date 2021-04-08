@@ -1,7 +1,7 @@
 export async function loadMap(scene) {
 
 
-    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/", "map.glb", scene);
+    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/models/", "map.glb", scene);
     let map = result.meshes[0];
 
     

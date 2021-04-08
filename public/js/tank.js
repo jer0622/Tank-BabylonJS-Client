@@ -47,7 +47,7 @@ export default class Tank {
         patronTank.bakeTransformIntoVertices(BABYLON.Matrix.Translation(0, 1.5, 0));
     
         // On importe le tank
-        const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/", "tank.glb", scene);
+        const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/models/", "tank.glb", scene);
         var tank = result.meshes[0];
 
         let allMeshes = tank.getChildMeshes();
