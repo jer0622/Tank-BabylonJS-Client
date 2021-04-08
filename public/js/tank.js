@@ -14,7 +14,7 @@ export default class Tank {
         this.#addListenerTourelle();
 
         // Vitesse de déplacement du tank
-        this.speed = 0.8;
+        this.speed = 0.6;
 
         // On crée le tank avec la caméra qui le suit
         await this.#createTank(scene);
@@ -99,7 +99,7 @@ export default class Tank {
     #checkMoveTank(deltaTime) {
         let fps = 1000 / deltaTime;
         let relativeSpeed = this.speed / (fps / 60);            // Vitesse de déplacement
-        let rotationSpeed = 0.1;                   // Vitesse de rotation
+        let rotationSpeed = 0.05;                   // Vitesse de rotation
         
         if (this.axisMovement[0]) {
             let forward = new BABYLON.Vector3(
@@ -125,22 +125,23 @@ export default class Tank {
         }
         this.tank.moveWithCollisions(new BABYLON.Vector3(0,(-1.5) * relativeSpeed ,0));
     }
-
-
+ 
+    // Permet de déplacer la tourelle
     #checkMoveTourelle() {
-        if (this.axisTourelle[0] === true) {
-            this.meshCannon.rotation.x -= 0.1;
+        let rotationSpeed = 0.03;
+        if (this.axisTourelle[0] === true && this.meshCannon.rotation.x >= 1.30) {
+            this.meshCannon.rotation.x -= rotationSpeed;
         }
-        if (this.axisTourelle[1] === true) {
-            this.meshCannon.rotation.x += 0.1;
+        if (this.axisTourelle[1] === true && this.meshCannon.rotation.x <= 1.72) {
+            this.meshCannon.rotation.x += rotationSpeed;
         }
         if (this.axisTourelle[2] === true) {
-            this.meshCannon.rotation.y -= 0.1;
-            this.meshTourelle.rotation.y -= 0.1;
+            this.meshCannon.rotation.y -= rotationSpeed;
+            this.meshTourelle.rotation.y -= rotationSpeed;
         }
         if (this.axisTourelle[3] === true) {
-            this.meshCannon.rotation.y += 0.1;
-            this.meshTourelle.rotation.y += 0.1;
+            this.meshCannon.rotation.y += rotationSpeed;
+            this.meshTourelle.rotation.y += rotationSpeed;
         }
     }
 
