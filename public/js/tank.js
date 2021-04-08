@@ -9,17 +9,15 @@ export default class Tank {
         this.axisMovement = [false, false, false, false, false];
         this.#addListenerMovement();
 
-        // Vitesse de déplacement
+        // Vitesse de déplacement du tank
         this.speed = 0.8;
 
-        // On crée le tank
+        // On crée le tank avec la caméra qui le suit
         await this.#createTank(scene);
+        let followCamera = this.#createFollowCamera(scene, this.tank);
 
         // On prépare les armes
         this.#prepareWeapons(scene);
-        
-        // On crée une caméra qui suit le tank
-        let followCamera = this.#createFollowCamera(scene, this.tank);
     }
 
 
@@ -124,6 +122,66 @@ export default class Tank {
         }
     }
 
+
+    // Prépare les armes
+    #prepareWeapons(scene) {
+        // Boulet de cannon (quand le tank tire)
+        var cannonBall = BABYLON.MeshBuilder.CreateSphere("cannonBall", {diameter: 1}, scene);
+        var cannonBallMat = new BABYLON.StandardMaterial("cannonBallMaterial", scene);
+        cannonBallMat.diffuseColor = BABYLON.Color3.Black();
+        cannonBallMat.specularPower = 256;
+        cannonBall.material = cannonBallMat;
+        cannonBall.visibility = false;
+        this.cannonBall = cannonBall;
+
+        // Importation du bruit du coup de cannon
+        this.cannonBlastSound = new BABYLON.Sound("bruitCannon", "./assets/sounds/cannonBlast.mp3", scene);
+
+        // Zone invisible au-dessous la map qui détruit le boulet de cannon
+        var killBox = BABYLON.MeshBuilder.CreateBox("killBox", {width:4000, depth:4000, height:4}, scene);
+        killBox.position = new BABYLON.Vector3(0, -50, 0);
+        killBox.visibility = 0;
+        this.killBox = killBox;
+
+        // Si le tank peut tirer (1 tire puis 3sec d'attente)
+        this.tireEnable = true;
+    }
+
+    // Permet au tank de tirer
+    #checkWeapons() {
+        if (this.axisMovement[4] === true && this.tireEnable === true) {  
+            let meshTank = this.scene.getMeshByName("Capsule");
+            var cannonBallClone = this.cannonBall.clone("cannonBallClone")
+            cannonBallClone.visibility = 1;
+            cannonBallClone.checkCollisions = false;
+            cannonBallClone.position = meshTank.absolutePosition;
+            cannonBallClone.physicsImpostor = new BABYLON.PhysicsImpostor(cannonBallClone, BABYLON.PhysicsImpostor.SphereImpostor, {mass:2, friction:0.5, restitution:0}, this.scene);
+            cannonBallClone.physicsImpostor.applyImpulse(meshTank.up.scale(140), BABYLON.Vector3.Zero());
+            cannonBallClone.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 20, 0), BABYLON.Vector3.Zero());
+                            
+            //create an action manager for the cannonBallClone that will fire when intersecting the killbox. It will then dispose of the cannonBallClone.
+            cannonBallClone.actionManager = new BABYLON.ActionManager(this.scene);
+            cannonBallClone.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger:BABYLON.ActionManager.OnIntersectionEnterTrigger,
+                        parameter:this.killBox
+                    }, 
+                    function(){
+                        cannonBallClone.dispose();
+                    }
+                )
+            );
+            this.cannonBlastSound.play();       // Joue le son du cannon
+
+            // Met le tire a false et démare le timer
+            this.tireEnable = false;
+            setTimeout(() => {
+                this.tireEnable = true;
+            }, 3000);
+        }
+    }
+
     // Listener des touches
     #addListenerMovement() {
         window.addEventListener('keydown', (event) => {
@@ -153,52 +211,5 @@ export default class Tank {
                 this.axisMovement[4] = false;
             }
         }, false);
-    }
-
-    // Prépare les armes
-    #prepareWeapons(scene) {
-        // Boulet de cannon (quand le tank tire)
-        var cannonBall = BABYLON.MeshBuilder.CreateSphere("cannonBall", {diameter: 1}, scene);
-        var cannonBallMat = new BABYLON.StandardMaterial("cannonBallMaterial", scene);
-        cannonBallMat.diffuseColor = BABYLON.Color3.Black();
-        cannonBallMat.specularPower = 256;
-        cannonBall.material = cannonBallMat;
-        cannonBall.visibility = false;
-        this.cannonBall = cannonBall;
-
-        // Zone invisible au-dessous la map qui détruit le boulet de cannon
-        var killBox = BABYLON.MeshBuilder.CreateBox("killBox", {width:4000, depth:4000, height:4}, scene);
-        killBox.position = new BABYLON.Vector3(0, -50, 0);
-        killBox.visibility = 0;
-        this.killBox = killBox;
-    }
-
-    // Permet au tank de tirer
-    #checkWeapons() {
-        if (this.axisMovement[4] === true) {  
-            let meshTank = this.scene.getMeshByName("Capsule");
-            var cannonBallClone = this.cannonBall.clone("cannonBallClone")
-            cannonBallClone.visibility = 1;
-            cannonBallClone.checkCollisions = false;
-            cannonBallClone.position = meshTank.absolutePosition;
-            cannonBallClone.physicsImpostor = new BABYLON.PhysicsImpostor(cannonBallClone, BABYLON.PhysicsImpostor.SphereImpostor, {mass:2, friction:0.5, restitution:0}, this.scene);
-            cannonBallClone.physicsImpostor.applyImpulse(meshTank.up.scale(140), BABYLON.Vector3.Zero());
-            cannonBallClone.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 20, 0), BABYLON.Vector3.Zero());
-                            
-            //create an action manager for the cannonBallClone that will fire when intersecting the killbox. It will then dispose of the cannonBallClone.
-            cannonBallClone.actionManager = new BABYLON.ActionManager(this.scene);
-            
-            cannonBallClone.actionManager.registerAction(
-                new BABYLON.ExecuteCodeAction(
-                    {
-                        trigger:BABYLON.ActionManager.OnIntersectionEnterTrigger,
-                        parameter:this.killBox
-                    }, 
-                    function(){
-                        cannonBallClone.dispose();
-                    }
-                )
-            );
-        } 
     }
 }
