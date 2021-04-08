@@ -10,7 +10,6 @@ let scene;
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", async function() {
-    await Ammo();
     await startGame("renderCanvas");
 }, false);
 
@@ -23,6 +22,9 @@ async function startGame(canvasId) {
     // Initialise la scene
     scene = createScene();
 
+    // Activation de la physique
+    scene.enablePhysics();
+
     // On charge la map
     var map = await loadMap(scene);
 
@@ -33,11 +35,7 @@ async function startGame(canvasId) {
     // Initialise les paramètre (affichage des fps, jeu en pause, etc...)
     let parametre = new Parametre(scene, canvas);
 
-
-    // On active la physique
-    scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), new BABYLON.AmmoJSPlugin());
     
-
     // Permet au jeu de tourner
     engine.runRenderLoop(() => {
         // On récupère le deltaTime
