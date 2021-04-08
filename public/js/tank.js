@@ -22,6 +22,18 @@ export default class Tank {
         let followCamera = this.#createFollowCamera(scene, this.tank);
     }
 
+
+    checkActionTank(deltaTime) {
+        // Déplace le joueur (le tank)
+        this.#checkMoveTank(deltaTime);
+
+        // Anime le tank en fonction des ses déplacement
+        this.#animateTank();
+
+        // Check des armes du tank
+        this.#checkWeapons();
+    }
+
     // Crée le Tank
     async #createTank(scene) {
         // Le "patron" du personnage
@@ -69,7 +81,7 @@ export default class Tank {
     }
 
     // Permet au joueur de déplacer le tank
-    checkMoveTank(deltaTime) {
+    #checkMoveTank(deltaTime) {
         let fps = 1000 / deltaTime;
         let relativeSpeed = this.speed / (fps / 60);            // Vitesse de déplacement
         let rotationSpeed = 0.1;                   // Vitesse de rotation
@@ -100,7 +112,7 @@ export default class Tank {
     }
 
     // Animation du tank
-    animateTank() {
+    #animateTank() {
         // Animation de déplacement
         if (this.axisMovement[0] || this.axisMovement[1] ||
             this.axisMovement[2] || this.axisMovement[3]) {
@@ -162,7 +174,7 @@ export default class Tank {
     }
 
     // Permet au tank de tirer
-    checkWeapons() {
+    #checkWeapons() {
         if (this.axisMovement[4] === true) {  
             let meshTank = this.scene.getMeshByName("Capsule");
             var cannonBallClone = this.cannonBall.clone("cannonBallClone")

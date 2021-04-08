@@ -1,12 +1,12 @@
 import Tank from "./tank.js";
 import {loadMap} from "./map.js";
+import Parametre from "./parametre.js"
+
 
 let canvas;
 let engine;
 let scene;
 
-// Fps
-let divFps = document.getElementById("fps");
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", async function() {
@@ -30,6 +30,9 @@ async function startGame(canvasId) {
     let tank = new Tank();
     await tank.build(scene, canvas);
 
+    // Initialise les paramètre (affichage des fps, jeu en pause, etc...)
+    let parametre = new Parametre(scene, canvas);
+
 
     // On active la physique
     scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), new BABYLON.AmmoJSPlugin());
@@ -37,21 +40,14 @@ async function startGame(canvasId) {
 
     // Permet au jeu de tourner
     engine.runRenderLoop(() => {
-        // Actualisation des fps
-        divFps.innerHTML = "fps :" + engine.getFps().toFixed();
-
         // On récupère le deltaTime
         let deltaTime = engine.getDeltaTime();
 
-        // Déplace le joueur (le tank)
-        tank.checkMoveTank(deltaTime);
+        // Actualisation des fps
+        parametre.showFps(engine.getFps().toFixed());
 
-        // Anime le tank en fonction des ses déplacement
-        tank.animateTank();
-
-        // Check des armes du tank
-        tank.checkWeapons();
-
+        // Action du tank
+        tank.checkActionTank(deltaTime);
 
 
         scene.render();
