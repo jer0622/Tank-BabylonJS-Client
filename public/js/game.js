@@ -5,6 +5,8 @@ let canvas;
 let engine;
 let scene;
 
+// Fps
+let divFps = document.getElementById("fps");
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", async function() {
@@ -35,6 +37,9 @@ async function startGame(canvasId) {
 
     // Permet au jeu de tourner
     engine.runRenderLoop(() => {
+        // Actualisation des fps
+        divFps.innerHTML = "fps :" + engine.getFps().toFixed();
+
         // On récupère le deltaTime
         let deltaTime = engine.getDeltaTime();
 
