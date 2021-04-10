@@ -24,7 +24,7 @@ export default class Tank {
         //camera.attachControl(canvas);
 
         // On prépare les armes
-        this.#prepareWeapons(scene);
+        await this.#prepareWeapons(scene);
     }
 
 
@@ -160,7 +160,7 @@ export default class Tank {
 
 
     // Prépare les armes
-    #prepareWeapons(scene) {
+    async #prepareWeapons(scene) {
         // Boulet de cannon (quand le tank tire)
         var cannonBall = BABYLON.MeshBuilder.CreateSphere("cannonBall", {diameter: 1}, scene);
         var cannonBallMat = new BABYLON.StandardMaterial("cannonBallMaterial", scene);
@@ -181,11 +181,26 @@ export default class Tank {
 
         // Si le tank peut tirer (1 tire puis 3sec d'attente)
         this.tireEnable = true;
+
+        // Creation d'une box pour émettre les particule lors d'un tire 
+        var particleEmitter = BABYLON.MeshBuilder.CreateBox("particleEmitter", {size: 0.05}, scene);
+        particleEmitter.position = new BABYLON.Vector3(29.9, 32.95, 4.6);
+        particleEmitter.rotation.x = BABYLON.Tools.ToRadians(78.5);
+        particleEmitter.isVisible = false;
+        particleEmitter.setParent(this.meshCannon);
+    
+        // Création des particule
+        const smokeBlast = await BABYLON.ParticleHelper.CreateFromSnippetAsync("LCBQ5Y#6", scene);
+        smokeBlast.emitter = particleEmitter;
+        smokeBlast.targetStopDuration = 0.2;
+        smokeBlast.stop();
+        this.smokeBlast = smokeBlast;
     }
 
     // Permet au tank de tirer
     #checkWeapons() {
-        if (this.axisMovement[4] === true && this.tireEnable === true) {  
+        if (this.axisMovement[4] === true && this.tireEnable === true) {
+            this.smokeBlast.start();    // Lance l'animation des particules
             var cannonBallClone = this.cannonBall.clone("cannonBallClone")
             cannonBallClone.visibility = 1;
             cannonBallClone.checkCollisions = false;
