@@ -11,6 +11,6 @@ export default class Parametre {
 
 
     showFps(fps) {
-        this.divFps.innerHTML = "fps : " + fps;
+        this.divFps.innerHTML = fps + " fps";
     }
 }
