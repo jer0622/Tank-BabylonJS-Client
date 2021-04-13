@@ -18,7 +18,7 @@ export default class Tank {
 
         // On crée le tank avec la caméra qui le suit
         await this.#createTank(scene);
-        let followCamera = this.#createFollowCamera(scene, this.tank);
+        this.camera = this.#createCamera(scene);
 
         //let camera = new BABYLON.FreeCamera("free", new BABYLON.Vector3(30, 20, -10), scene);
         //camera.attachControl(canvas);
@@ -82,15 +82,19 @@ export default class Tank {
 
 
     // Crée une caméra qui suit la target
-    #createFollowCamera(scene, target) {
-        let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
-        camera.radius = 20;                 // how far from the object to follow
-        camera.heightOffset = 14;           // how high above the object to place the camera
-        camera.rotationOffset = 180;        // the viewing angle
-        camera.cameraAcceleration = .1;     // how fast to move
-        camera.maxCameraSpeed = 5;          // speed limit
-        camera.fov = 1;
-    
+    #createCamera(scene) {        
+        let camera = new BABYLON.ArcRotateCamera("RotateCamera", -Math.PI / 2, Math.PI / 2, 0, this.meshTourelle.absolutePosition, scene);
+        camera.position = new BABYLON.Vector3(0, 15, -25);        
+        camera.angularSensibilityX = 2000;
+        camera.angularSensibilityY = 2000;
+        
+        camera.upperBetaLimit = Math.PI / 2.3;
+        //camera.lowerBetaLimit = Math.PI / 2;
+        camera.upperRadiusLimit = 30;
+        camera.lowerRadiusLimit = 15;
+        //camera.inputs.attachInput(camera.inputs.attached.mouse);
+        camera.attachControl(this.canvas, false);
+
         scene.activeCamera = camera;
         return camera;
     }
@@ -99,7 +103,7 @@ export default class Tank {
     #checkMoveTank(deltaTime) {
         let fps = 1000 / deltaTime;
         let relativeSpeed = this.speed / (fps / 60);            // Vitesse de déplacement
-        let rotationSpeed = 0.05;                   // Vitesse de rotation
+        let rotationSpeed = 0.05;                               // Vitesse de rotation
         
         if (this.axisMovement[0]) {
             let forward = new BABYLON.Vector3(
@@ -118,16 +122,21 @@ export default class Tank {
             this.tank.moveWithCollisions(backward);
         }
         if (this.axisMovement[2]) {
+            this.meshTourelle.rotation.z -= rotationSpeed;
+            this.meshCannon.rotation.z -= rotationSpeed;
             this.tank.rotation.y += rotationSpeed;
         }
         if (this.axisMovement[3]) {
+            this.meshTourelle.rotation.z += rotationSpeed;
+            this.meshCannon.rotation.z += rotationSpeed;
             this.tank.rotation.y -= rotationSpeed;
         }
-        this.tank.moveWithCollisions(new BABYLON.Vector3(0,(-1.5) * relativeSpeed ,0));
+        this.tank.moveWithCollisions(new BABYLON.Vector3(0, (-1.5) * relativeSpeed, 0));
     }
  
     // Permet de déplacer la tourelle
     #checkMoveTourelle() {
+        /*
         let rotationSpeed = 0.03;
         if (this.axisTourelle[0] === true && this.meshCannon.rotation.x >= 1.30) {
             this.meshCannon.rotation.x -= rotationSpeed;
@@ -143,6 +152,11 @@ export default class Tank {
             this.meshCannon.rotation.y += rotationSpeed;
             this.meshTourelle.rotation.y += rotationSpeed;
         }
+        */
+
+        //this.meshCannon.rotation.x = this.camera.beta;
+        this.meshCannon.rotation.y = this.camera.alpha + (Math.PI / 2);
+        this.meshTourelle.rotation.y = this.camera.alpha + (Math.PI / 2);
     }
 
     // Animation du tank
@@ -209,7 +223,7 @@ export default class Tank {
             cannonBallClone.physicsImpostor.applyImpulse(this.meshCannon.up.scale(140), BABYLON.Vector3.Zero());
             cannonBallClone.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 20, 0), BABYLON.Vector3.Zero());
                             
-            //create an action manager for the cannonBallClone that will fire when intersecting the killbox. It will then dispose of the cannonBallClone.
+            // Crée un gestionnaire d'action pour cannonBallClone
             cannonBallClone.actionManager = new BABYLON.ActionManager(this.scene);
             cannonBallClone.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(
@@ -217,14 +231,14 @@ export default class Tank {
                         trigger:BABYLON.ActionManager.OnIntersectionEnterTrigger,
                         parameter:this.killBox
                     }, 
-                    function(){
+                    function() {
                         cannonBallClone.dispose();
                     }
                 )
             );
             this.cannonBlastSound.play();       // Joue le son du cannon
 
-            // Met le tire a false et démare le timer
+            // Met le tir a false et démare le timer
             this.tireEnable = false;
             setTimeout(() => {
                 this.tireEnable = true;
