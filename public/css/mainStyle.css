@@ -23,3 +23,52 @@ html, body {
     width: 60px;
     height: 20px;
 }
+
+.buttonParam {
+    background-size: contain;
+    position: absolute;
+    cursor: pointer;
+    top: 15px;
+    width: 40px;
+    height: 40px;
+}
+
+#fullScreen {
+    background-image: url(/public/assets/images/fullScreen.svg);
+    right: 15px;
+}
+
+#fullScreen:hover {
+    background-image: url(/public/assets/images/fullScreen-hover.svg);
+    right: 15px;
+}
+
+#minimisedScreen {
+    background-image: url(/public/assets/images/minimisedScreen.svg);
+    right: 15px;
+}
+
+#minimisedScreen:hover {
+    background-image: url(/public/assets/images/minimisedScreen-hover.svg);
+    right: 15px;
+}
+
+#settings {
+    background-image: url(/public/assets/images/settings.svg);
+    right: 70px;
+}
+
+#settings:hover {
+    background-image: url(/public/assets/images/settings-hover.svg);
+    right: 70px;
+}
+
+#home {
+    background-image: url(/public/assets/images/home.svg);
+    right: 125px;
+}
+
+#home:hover {
+    background-image: url(/public/assets/images/home-hover.svg);
+    right: 125px;
+}

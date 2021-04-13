@@ -1,16 +1,21 @@
-
-
 export default class Parametre {
 
     constructor(scene, canvas) {
         this.scene = scene;
         this.canvas = canvas;
 
-        // Div pour l'affichage des fps
+        // On récupère les div du document
         this.divFps = document.getElementById("fps");
+        this.divFullScreen = document.getElementById("fullScreen");
+        this.divSettings = document.getElementById("settings");
+        this.divHome = document.getElementById("home");
+        
+        // Si le mode plei écran est activé
+        this.fullScreen = false;
 
-        // Ajout de listener pour vérrouiller la souris dans le jeu
-        this.lockPointer();
+        // Ajout de listener
+        this.#listenerLockPointer();
+        this.#listenerFullScreen();
     }
 
     // Actualise l'affichage des fps
@@ -20,7 +25,7 @@ export default class Parametre {
 
 
     // Ajout de listener pour vérrouiller la souris dans le jeu
-    lockPointer() {
+    #listenerLockPointer() {
         this.scene.onPointerDown = () => {
             if (!this.scene.alreadyLocked) {
                 this.canvas.requestPointerLock();
@@ -36,5 +41,23 @@ export default class Parametre {
                 this.scene.alreadyLocked = false;
             }
         })
+    }
+
+    // Ajout de onClick pour activer ou désactiver le mode plein écran
+    #listenerFullScreen() {
+        this.divFullScreen.onclick = () => {
+            if (document.body.requestFullscreen) {
+                if (this.fullScreen) {
+                    document.exitFullscreen();
+                    this.fullScreen = false;
+                    this.divFullScreen.setAttribute("id", "fullScreen");
+                }
+                else {
+                    document.body.requestFullscreen();
+                    this.fullScreen = true;
+                    this.divFullScreen.setAttribute("id", "minimisedScreen");
+                }
+            }
+        }
     }
 }
