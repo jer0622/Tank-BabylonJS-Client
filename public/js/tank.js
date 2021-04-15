@@ -83,7 +83,7 @@ export default class Tank {
 
     // Crée une caméra qui suit la target
     #createCamera(scene) {        
-        let camera = new BABYLON.ArcRotateCamera("RotateCamera", -Math.PI / 2, Math.PI / 2, 0, this.meshTourelle.absolutePosition, scene);
+        let camera = new BABYLON.ArcRotateCamera("TankRotateCamera", -Math.PI / 2, Math.PI / 2, 0, this.meshTourelle.absolutePosition, scene);
         camera.position = new BABYLON.Vector3(0, 15, -25);        
         camera.angularSensibilityX = 2000;
         camera.angularSensibilityY = 2000;
