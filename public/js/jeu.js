@@ -23,7 +23,7 @@ async function startGame(canvasId) {
     scene = createScene();
 
     // Activation de la physique
-    scene.enablePhysics();
+    scene.enablePhysics(new BABYLON.Vector3(0,-9.81, 0), new BABYLON.CannonJSPlugin());
 
     // On charge la map
     var map = await loadMap(scene);
@@ -65,7 +65,7 @@ async function startGame(canvasId) {
 function createScene(engine) {
     let scene = new BABYLON.Scene(engine);
     scene.clearColor = new BABYLON.Color3(4, 0.9, 0.9);
-    scene.gravity = new BABYLON.Vector3(0, -10, 0);
+    scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
     scene.collisionsEnabled = true;
     return scene;
 }

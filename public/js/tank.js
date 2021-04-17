@@ -1,3 +1,5 @@
+import {modulo} from "./utilitaire.js"
+
 export default class Tank {
 
     async build(scene, canvas) {
@@ -33,7 +35,7 @@ export default class Tank {
         this.#checkMoveTank(deltaTime);
 
         // Rotation de la tourelle
-        this.#checkMoveTourelle();
+        this.#checkMoveTourelle(deltaTime);
 
         // Anime le tank en fonction des ses déplacement
         this.#animateTank();
@@ -69,6 +71,10 @@ export default class Tank {
         // On récupère les mesh du cannon et de la tourelle (pour tirer et déplacer la tourelle)
         this.meshCannon = this.scene.getMeshByName("Cannon");
         this.meshTourelle = this.scene.getMeshByName("Tourelle");
+        this.meshCannon.rotation.z -= Math.PI/2;
+        this.meshTourelle.rotation.z -= Math.PI/2;
+        this.meshCannon.rotation.y -= Math.PI/2;
+        this.meshTourelle.rotation.z -= Math.PI/2;
 
         // On défini le patron comme parent au tank
         tank.parent = patronTank;
@@ -83,11 +89,12 @@ export default class Tank {
 
     // Crée une caméra qui suit la target
     #createCamera(scene) {        
-        let camera = new BABYLON.ArcRotateCamera("TankRotateCamera", -Math.PI / 2, Math.PI / 2, 0, this.meshTourelle.absolutePosition, scene);
-        camera.position = new BABYLON.Vector3(0, 15, -25);        
+        let camera = new BABYLON.ArcRotateCamera("TankRotateCamera", 0, 0, 0, this.meshTourelle.absolutePosition, scene);
+        camera.position = new BABYLON.Vector3(0, 15, -25);
+        camera.alpha += Math.PI/1200;
         camera.angularSensibilityX = 2000;
         camera.angularSensibilityY = 2000;
-        
+
         camera.upperBetaLimit = Math.PI / 2.3;
         //camera.lowerBetaLimit = Math.PI / 2;
         camera.upperRadiusLimit = 30;
@@ -135,28 +142,33 @@ export default class Tank {
     }
  
     // Permet de déplacer la tourelle
-    #checkMoveTourelle() {
-        /*
-        let rotationSpeed = 0.03;
-        if (this.axisTourelle[0] === true && this.meshCannon.rotation.x >= 1.30) {
-            this.meshCannon.rotation.x -= rotationSpeed;
-        }
-        if (this.axisTourelle[1] === true && this.meshCannon.rotation.x <= 1.72) {
-            this.meshCannon.rotation.x += rotationSpeed;
-        }
-        if (this.axisTourelle[2] === true) {
-            this.meshCannon.rotation.y -= rotationSpeed;
-            this.meshTourelle.rotation.y -= rotationSpeed;
-        }
-        if (this.axisTourelle[3] === true) {
-            this.meshCannon.rotation.y += rotationSpeed;
-            this.meshTourelle.rotation.y += rotationSpeed;
-        }
-        */
+    #checkMoveTourelle(deltaTime) {
+        this.camera.alpha = modulo(this.camera.alpha, Math.PI*2);
+        this.meshCannon.rotation.y = modulo(this.meshCannon.rotation.y, Math.PI*2);
+        this.meshTourelle.rotation.y = modulo(this.meshTourelle.rotation.y, Math.PI*2);
 
-        //this.meshCannon.rotation.x = this.camera.beta;
-        this.meshCannon.rotation.y = this.camera.alpha + (Math.PI / 2);
-        this.meshTourelle.rotation.y = this.camera.alpha + (Math.PI / 2);
+        let rotate = Math.abs(Math.abs(this.meshCannon.rotation.y) - Math.abs(this.camera.alpha));
+        let diff = this.meshCannon.rotation.y - this.camera.alpha;
+        if (rotate > 0.04 && diff < -0.04) {  
+            if (Math.abs(diff) > Math.PI) {
+                this.meshCannon.rotation.y -= 0.01;
+                this.meshTourelle.rotation.y -= 0.01;
+            }
+            else {
+                this.meshCannon.rotation.y += 0.01;
+                this.meshTourelle.rotation.y += 0.01;
+            }
+        }
+        else if (rotate > 0.04 && diff > 0.04) {
+            if (Math.abs(diff) > Math.PI) {
+                this.meshCannon.rotation.y += 0.01;
+                this.meshTourelle.rotation.y += 0.01;
+            }
+            else {
+                this.meshCannon.rotation.y -= 0.01;
+                this.meshTourelle.rotation.y -= 0.01;
+            }
+        }
     }
 
     // Animation du tank

@@ -13,3 +13,11 @@ export function radToDeg(rad) {
 export function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// Modulo positif
+export function modulo(a, b) {
+    if ((a % b) < 0)
+        return b + (a % b);
+    else
+        return a % b;
+}
