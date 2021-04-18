@@ -18,6 +18,9 @@ export default class Tank {
         // Vitesse de déplacement du tank
         this.speed = 0.6;
 
+        // Vie du tank
+        this.life = 100;
+
         // On crée le tank avec la caméra qui le suit
         await this.#createTank(scene);
         this.camera = this.#createCamera(scene);
@@ -143,6 +146,8 @@ export default class Tank {
  
     // Permet de déplacer la tourelle
     #checkMoveTourelle(deltaTime) {
+        let relativeRotate = 0.2 / deltaTime;
+
         this.camera.alpha = modulo(this.camera.alpha, Math.PI*2);
         this.meshCannon.rotation.y = modulo(this.meshCannon.rotation.y, Math.PI*2);
         this.meshTourelle.rotation.y = modulo(this.meshTourelle.rotation.y, Math.PI*2);
@@ -151,22 +156,22 @@ export default class Tank {
         let diff = this.meshCannon.rotation.y - this.camera.alpha;
         if (rotate > 0.04 && diff < -0.04) {  
             if (Math.abs(diff) > Math.PI) {
-                this.meshCannon.rotation.y -= 0.01;
-                this.meshTourelle.rotation.y -= 0.01;
+                this.meshCannon.rotation.y -= relativeRotate;
+                this.meshTourelle.rotation.y -= relativeRotate;
             }
             else {
-                this.meshCannon.rotation.y += 0.01;
-                this.meshTourelle.rotation.y += 0.01;
+                this.meshCannon.rotation.y += relativeRotate;
+                this.meshTourelle.rotation.y += relativeRotate;
             }
         }
         else if (rotate > 0.04 && diff > 0.04) {
             if (Math.abs(diff) > Math.PI) {
-                this.meshCannon.rotation.y += 0.01;
-                this.meshTourelle.rotation.y += 0.01;
+                this.meshCannon.rotation.y += relativeRotate;
+                this.meshTourelle.rotation.y += relativeRotate;
             }
             else {
-                this.meshCannon.rotation.y -= 0.01;
-                this.meshTourelle.rotation.y -= 0.01;
+                this.meshCannon.rotation.y -= relativeRotate;
+                this.meshTourelle.rotation.y -= relativeRotate;
             }
         }
     }

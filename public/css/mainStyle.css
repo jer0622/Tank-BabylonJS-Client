@@ -73,8 +73,25 @@ html, body {
     right: 125px;
 }
 
+#life {
+    position: absolute;
+    top: 86%;
+    left: 1.8%;
+    color: #4b6e70;
+    font-size: xx-large;
+    font-weight: bold;
+}
 
-
+#lifeBar {
+    background-size: contain;
+    position: absolute;
+    top: 91%;
+    left: 1%;
+    width: 280px;
+    height: 150px;
+    background-image: url(/public/assets/images/life20.png);
+    background-repeat: no-repeat;
+}
 
 
 

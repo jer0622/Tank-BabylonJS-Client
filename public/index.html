@@ -20,6 +20,10 @@
         <div class="buttonParam" id="home"></div>
         <div class="buttonParam" id="settings"></div>
         <div class="buttonParam" id="fullScreen"></div>
+
+        <div id="life">100/100</div>
+        <div id="lifeBar"></div>
+        <div id="weapons"></div>
         <canvas id="renderCanvas" width=1600 height=1200></canvas>
 
         <div role="dialog" id="settingsPanel">
@@ -29,7 +33,6 @@
                 <button class="buttonSettingsPanel" id="buttonControle" style="color: #158EC6;" type="button" role="tab" aria-selected="true">Contrôles</button>
                 <button class="buttonSettingsPanel" id="buttonOption" style="float: right;" type="button" role="tab" aria-selected="false">Options</button>
                 <div id="buttonSelected"></div>
-
                 <div id="divControle" style="margin: 3% 4% 1% 4%; font-size: large; font-family: Arial;">
                     Controle
                 </div>
@@ -38,7 +41,6 @@
                     <input type="range" min="0" max="100" value="100" style="width: 100%;">
                 </div>
             </div>
-            
         </div>
     </body>
 
