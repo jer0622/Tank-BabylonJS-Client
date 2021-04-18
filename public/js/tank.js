@@ -11,10 +11,6 @@ export default class Tank {
         this.axisMovement = [false, false, false, false, false];
         this.#addListenerMovement();
 
-        // MOUVEMENT TOURELLE PROVISOIRE
-        this.axisTourelle = [false, false, false, false];
-        this.#addListenerTourelle();
-
         // Vitesse de déplacement du tank
         this.speed = 0.6;
 
@@ -290,34 +286,6 @@ export default class Tank {
                 this.axisMovement[3] = false;
             } else if (event.key === " ") {
                 this.axisMovement[4] = false;
-            }
-        }, false);
-    }
-
-
-    // FONCTION PROVISOIRE
-    #addListenerTourelle() {
-        window.addEventListener('keydown', (event) => {
-            if (event.key === "ArrowUp") {
-                this.axisTourelle[0] = true;
-            } else if (event.key === "ArrowDown") {
-                this.axisTourelle[1] = true;
-            } else if (event.key === "ArrowRight") {
-                this.axisTourelle[2] = true;
-            } else if (event.key === "ArrowLeft") {
-                this.axisTourelle[3] = true;
-            }
-        }, false);
-
-        window.addEventListener('keyup', (event) => {
-            if (event.key === "ArrowUp") {
-                this.axisTourelle[0] = false;
-            } else if (event.key === "ArrowDown") {
-                this.axisTourelle[1] = false;
-            } else if (event.key === "ArrowRight") {
-                this.axisTourelle[2] = false;
-            } else if (event.key === "ArrowLeft") {
-                this.axisTourelle[3] = false;
             }
         }, false);
     }
