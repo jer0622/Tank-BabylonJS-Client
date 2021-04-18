@@ -4,8 +4,8 @@
 Jeremy HIRTH DAUMAS
 
 ## Commandes :
- - Déplacer le char avec les touches Z, Q, S, D.
- - Déplacer la tourelle et le cannon du char avec les flèches directionnelle.
+ - Déplacer le char avec les touches Z, Q, S, D (ou avec les flèches directionnelle).
+ - Déplacer la tourelle et le cannon du char avec la souris.
 
 ## Sources des objets blender utilisés :
  - [Pont](https://www.turbosquid.com/fr/3d-models/free-max-model-bridge/789884)
