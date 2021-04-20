@@ -89,7 +89,7 @@ html, body {
     left: 1%;
     width: 280px;
     height: 150px;
-    background-image: url(/public/assets/images/life20.png);
+    background-image: url(/public/assets/images/lifeBar/lifeBar_20.png);
     background-repeat: no-repeat;
 }
 
