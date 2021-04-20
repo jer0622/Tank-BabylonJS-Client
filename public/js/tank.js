@@ -70,10 +70,7 @@ export default class Tank {
         // On récupère les mesh du cannon et de la tourelle (pour tirer et déplacer la tourelle)
         this.meshCannon = this.scene.getMeshByName("Cannon");
         this.meshTourelle = this.scene.getMeshByName("Tourelle");
-        this.meshCannon.rotation.z -= Math.PI/2;
-        this.meshTourelle.rotation.z -= Math.PI/2;
-        this.meshCannon.rotation.y -= Math.PI/2;
-        this.meshTourelle.rotation.z -= Math.PI/2;
+        this.meshCannon.rotateY = 0;
 
         // On défini le patron comme parent au tank
         tank.parent = patronTank;
@@ -88,9 +85,7 @@ export default class Tank {
 
     // Crée une caméra qui suit la target
     #createCamera(scene) {        
-        let camera = new BABYLON.ArcRotateCamera("TankRotateCamera", 0, 0, 0, this.meshTourelle.absolutePosition, scene);
-        camera.position = new BABYLON.Vector3(0, 15, -25);
-        camera.alpha += Math.PI/1200;
+        let camera = new BABYLON.ArcRotateCamera("TankRotateCamera", -Math.PI/2, 1.1, 25, this.meshTourelle.absolutePosition, scene);
         camera.angularSensibilityX = 2000;
         camera.angularSensibilityY = 2000;
 
@@ -128,48 +123,55 @@ export default class Tank {
             this.tank.moveWithCollisions(backward);
         }
         if (this.axisMovement[2]) {
-            this.meshTourelle.rotation.z -= rotationSpeed;
-            this.meshCannon.rotation.z -= rotationSpeed;
             this.tank.rotation.y += rotationSpeed;
+            this.meshCannon.rotateY += rotationSpeed;
         }
         if (this.axisMovement[3]) {
-            this.meshTourelle.rotation.z += rotationSpeed;
-            this.meshCannon.rotation.z += rotationSpeed;
             this.tank.rotation.y -= rotationSpeed;
+            this.meshCannon.rotateY -= rotationSpeed;
         }
         this.tank.moveWithCollisions(new BABYLON.Vector3(0, (-1.5) * relativeSpeed, 0));
     }
  
     // Permet de déplacer la tourelle
     #checkMoveTourelle(deltaTime) {
-        let relativeRotate = 0.2 / deltaTime;
+        let relativeRotate = 0.0005 * deltaTime;
 
         this.camera.alpha = modulo(this.camera.alpha, Math.PI*2);
         this.meshCannon.rotation.y = modulo(this.meshCannon.rotation.y, Math.PI*2);
         this.meshTourelle.rotation.y = modulo(this.meshTourelle.rotation.y, Math.PI*2);
 
-        let rotate = Math.abs(Math.abs(this.meshCannon.rotation.y) - Math.abs(this.camera.alpha));
-        let diff = this.meshCannon.rotation.y - this.camera.alpha;
-        if (rotate > 0.04 && diff < -0.04) {  
-            if (Math.abs(diff) > Math.PI) {
-                this.meshCannon.rotation.y -= relativeRotate;
-                this.meshTourelle.rotation.y -= relativeRotate;
+        let diff = this.meshCannon.rotation.y - modulo(this.camera.alpha + Math.PI/2, Math.PI*2) - modulo(this.meshCannon.rotateY, Math.PI*2);
+        diff = modulo(diff, Math.PI*2);
+
+        if (relativeRotate >= Math.abs(diff)) {
+            this.meshCannon.rotation.y += diff/1000;
+            this.meshTourelle.rotation.y += diff/1000;
+        }
+        else {
+            if (diff < -0.04) {
+                if (Math.abs(diff) > Math.PI) {
+                    this.meshCannon.rotation.y -= relativeRotate;
+                    this.meshTourelle.rotation.y -= relativeRotate;
+                }
+                else {
+                    this.meshCannon.rotation.y += relativeRotate;
+                    this.meshTourelle.rotation.y += relativeRotate;
+                }
             }
-            else {
-                this.meshCannon.rotation.y += relativeRotate;
-                this.meshTourelle.rotation.y += relativeRotate;
+            else if (diff > 0.04) {
+                if (Math.abs(diff) > Math.PI) {
+                    this.meshCannon.rotation.y += relativeRotate;
+                    this.meshTourelle.rotation.y += relativeRotate;
+                }
+                else {
+                    this.meshCannon.rotation.y -= relativeRotate;
+                    this.meshTourelle.rotation.y -= relativeRotate;
+                }
             }
         }
-        else if (rotate > 0.04 && diff > 0.04) {
-            if (Math.abs(diff) > Math.PI) {
-                this.meshCannon.rotation.y += relativeRotate;
-                this.meshTourelle.rotation.y += relativeRotate;
-            }
-            else {
-                this.meshCannon.rotation.y -= relativeRotate;
-                this.meshTourelle.rotation.y -= relativeRotate;
-            }
-        }
+
+        this.meshCannon.rotation.x = this.camera.beta;
     }
 
     // Animation du tank
