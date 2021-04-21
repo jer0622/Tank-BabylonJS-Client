@@ -7,6 +7,10 @@ export default class Tank {
         this.scene = scene;
         this.canvas = canvas;
 
+        // Récupération des div html
+        this.divlife = document.getElementById("life");
+        this.divlifeBar = document.getElementById("lifeBar");
+
         // Axe de mouvement X et Z
         this.axisMovement = [false, false, false, false, false];
         this.#addListenerMovement();
@@ -17,9 +21,10 @@ export default class Tank {
         // Vie du tank
         this.life = 100;
 
-        // On crée le tank avec la caméra qui le suit
+        // On crée le tank avec la caméra qui le suit et le viseur
         await this.#createTank(scene);
         this.camera = this.#createCamera(scene);
+        this.#createCrosshair(scene);
 
         //let camera = new BABYLON.FreeCamera("free", new BABYLON.Vector3(30, 20, -10), scene);
         //camera.attachControl(canvas);
@@ -90,7 +95,8 @@ export default class Tank {
         camera.angularSensibilityY = 2000;
 
         camera.upperBetaLimit = Math.PI / 2.3;
-        //camera.lowerBetaLimit = Math.PI / 2;
+        camera.lowerBetaLimit = Math.PI / 4;
+
         camera.upperRadiusLimit = 30;
         camera.lowerRadiusLimit = 15;
         //camera.inputs.attachInput(camera.inputs.attached.mouse);
@@ -142,25 +148,15 @@ export default class Tank {
         this.meshTourelle.rotation.y = modulo(this.meshTourelle.rotation.y, Math.PI*2);
 
         let diff = this.meshCannon.rotation.y - modulo(this.camera.alpha + Math.PI/2, Math.PI*2) - modulo(this.meshCannon.rotateY, Math.PI*2);
-        diff = modulo(diff, Math.PI*2);
+        let diffMod = modulo(diff, Math.PI*2);
 
-        if (relativeRotate >= Math.abs(diff)) {
-            this.meshCannon.rotation.y += diff/1000;
-            this.meshTourelle.rotation.y += diff/1000;
+        if (relativeRotate >= Math.abs(diffMod)) {
+            this.meshCannon.rotation.y += diffMod/1000;
+            this.meshTourelle.rotation.y += diffMod/1000;
         }
         else {
-            if (diff < -0.04) {
-                if (Math.abs(diff) > Math.PI) {
-                    this.meshCannon.rotation.y -= relativeRotate;
-                    this.meshTourelle.rotation.y -= relativeRotate;
-                }
-                else {
-                    this.meshCannon.rotation.y += relativeRotate;
-                    this.meshTourelle.rotation.y += relativeRotate;
-                }
-            }
-            else if (diff > 0.04) {
-                if (Math.abs(diff) > Math.PI) {
+            if (diffMod > 0.04) {
+                if (Math.abs(diffMod) > Math.PI) {
                     this.meshCannon.rotation.y += relativeRotate;
                     this.meshTourelle.rotation.y += relativeRotate;
                 }
@@ -171,7 +167,33 @@ export default class Tank {
             }
         }
 
-        this.meshCannon.rotation.x = this.camera.beta;
+        if (diff > Math.PI/2 || -diff < -Math.PI/2) {
+            this.crosshairTourelle1.isVisible = false;
+            this.crosshairTourelle2.isVisible = false;
+            this.crosshairTourelle3.isVisible = false;
+            this.crosshairTourelle4.isVisible = false;
+        }
+        else {
+            this.crosshairTourelle1.isVisible = true;
+            this.crosshairTourelle2.isVisible = true;
+            this.crosshairTourelle3.isVisible = true;
+            this.crosshairTourelle4.isVisible = true;
+        }
+
+        this.meshCannon.rotation.x = -this.camera.beta - 3.7;
+    }
+
+
+    #updateLife() {
+        if (this.life >= 0) {
+            this.divlife.innerHTML = this.life + "/100";
+
+            let newImage = Math.trunc(this.life * 20 / 100);
+            if (newImage >=10 && newImage <= 20)
+                this.divlifeBar.style.backgroundImage = "url(/public/assets/images/lifeBar/lifeBar_" + newImage + ".png)";
+            else if(newImage >= 0 && newImage < 10)
+                this.divlifeBar.style.backgroundImage = "url(/public/assets/images/lifeBar/lifeBar_0" + newImage + ".png)";
+        }
     }
 
     // Animation du tank
@@ -185,6 +207,71 @@ export default class Tank {
             this.animRun.stop();
             this.animRun.reset();
         }
+    }
+
+
+    #createCrosshair(scene) {
+        var crosshairMat = new BABYLON.StandardMaterial("crosshairMat", scene);
+        crosshairMat.diffuseColor = new BABYLON.Color3(90, 88, 85);
+        crosshairMat.emissiveColor = new BABYLON.Color3(90, 88, 85);
+        crosshairMat.specularColor = new BABYLON.Color3(90, 88, 85);
+
+        // Viseur qui suit la caméra
+        this.crosshairCameraVertical = BABYLON.MeshBuilder.CreateBox("crossCamV", {height: .7, width: .06, depth: .01}, scene);
+        this.crosshairCameraVertical.position = new BABYLON.Vector3(0, 2.8, 20);
+        this.crosshairCameraVertical.rotation.z = Math.PI / 2;
+        this.crosshairCameraVertical.isPickable = false;
+        this.crosshairCameraVertical.parent = this.camera;
+        this.crosshairCameraVertical.material = crosshairMat;
+        
+        this.crosshairCameraHorizontal = BABYLON.MeshBuilder.CreateBox("crossCamH", {height: .7, width: .06, depth: .01}, scene);
+        this.crosshairCameraHorizontal.position = new BABYLON.Vector3(0, 2.8, 20);
+        this.crosshairCameraHorizontal.isPickable = false;
+        this.crosshairCameraHorizontal.parent = this.camera;
+        this.crosshairCameraHorizontal.material = crosshairMat;
+
+
+        // Provisoire
+        var crosshairMat2 = new BABYLON.StandardMaterial("crosshairMat", scene);
+        crosshairMat2.diffuseColor = new BABYLON.Color3.Blue();
+        crosshairMat2.emissiveColor = new BABYLON.Color3.Blue();
+        crosshairMat2.specularColor = new BABYLON.Color3.Blue();
+        
+
+        // Viseur qui suit la tourelle
+        this.crosshairTourelle1 = BABYLON.MeshBuilder.CreateBox("crossTourelle1", {height: .5, width: .1, depth: .01}, scene);
+        this.crosshairTourelle1.position = new BABYLON.Vector3(29.1, 35.2, 4.6);
+        this.crosshairTourelle1.rotation.x = 0.3
+        this.crosshairTourelle1.isVisible = true;
+        this.crosshairTourelle1.isPickable = false;
+        this.crosshairTourelle1.setParent(this.meshCannon);
+        this.crosshairTourelle1.material = crosshairMat2;    
+        
+        this.crosshairTourelle2 = BABYLON.MeshBuilder.CreateBox("Tourelle2", {height: .5, width: .1, depth: .01}, scene);
+        this.crosshairTourelle2.position = new BABYLON.Vector3(29.3, 35.5, 4.6);
+        this.crosshairTourelle2.rotation.z = Math.PI / 2;
+        this.crosshairTourelle2.rotation.x = 0.3;
+        this.crosshairTourelle2.isVisible = true;
+        this.crosshairTourelle2.isPickable = false;
+        this.crosshairTourelle2.setParent(this.meshCannon);
+        this.crosshairTourelle2.material = crosshairMat2;
+
+        this.crosshairTourelle3 = BABYLON.MeshBuilder.CreateBox("Tourelle3", {height: .5, width: .1, depth: .01}, scene);
+        this.crosshairTourelle3.position = new BABYLON.Vector3(30.7, 34.3, 4.6);
+        this.crosshairTourelle3.rotation.x = 0.3
+        this.crosshairTourelle3.isVisible = true;
+        this.crosshairTourelle3.isPickable = false;
+        this.crosshairTourelle3.setParent(this.meshCannon);
+        this.crosshairTourelle3.material = crosshairMat2;    
+         
+        this.crosshairTourelle4 = BABYLON.MeshBuilder.CreateBox("Tourelle4", {height: .5, width: .1, depth: .01}, scene);
+        this.crosshairTourelle4.position = new BABYLON.Vector3(30.5, 34, 4.6);
+        this.crosshairTourelle4.rotation.z = Math.PI / 2;
+        this.crosshairTourelle4.rotation.x = 0.3;
+        this.crosshairTourelle4.isVisible = true;
+        this.crosshairTourelle4.isPickable = false;
+        this.crosshairTourelle4.setParent(this.meshCannon);
+        this.crosshairTourelle4.material = crosshairMat2; 
     }
 
 
