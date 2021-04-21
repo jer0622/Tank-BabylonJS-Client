@@ -14,7 +14,7 @@ export async function loadMap(scene) {
     });
 
     scene.getMeshByName("sea").material.needDepthPrePass = true;
-    scene.getLightByName("Sun").intensity = 12;
+    scene.getLightByName("Sun").intensity = 10;
     
 
     let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(-1, -1, 0), scene);

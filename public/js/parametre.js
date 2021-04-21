@@ -8,8 +8,19 @@ export default class Parametre {
         this.divFps = document.getElementById("fps");
         this.divFullScreen = document.getElementById("fullScreen");
         this.settings = document.getElementById("settingsPanel");
-        
         this.divHome = document.getElementById("home");
+
+        // Volume et lumonosité
+        this.inputVolume = document.getElementById("volume");
+        this.inputLuminosite = document.getElementById("luminosite");
+        this.volume = 0.5;
+        this.luminosite = 10; 
+
+        // Sensibilité
+        this.inputSensibiliteX = document.getElementById("sensibiliteX");
+        this.inputSensibiliteY = document.getElementById("sensibiliteY");
+        this.sensibiliteX = 2000;
+        this.sensibiliteY = 2000;
         
         // Si le mode plei écran est activé
         this.divFullScreen.enable = false;
@@ -19,6 +30,54 @@ export default class Parametre {
         this.#listenerFullScreen();
         this.#listenerSettings();
     }
+
+    updateParametre(fps) {
+        this.showFps(fps);
+
+        // Check du volume
+        let newVolume = this.inputVolume.value / 100;
+        if (newVolume != this.volume) {
+            BABYLON.Engine.audioEngine.setGlobalVolume(newVolume);
+        }
+
+        // Check de la luminosité
+        let newLuminosite = this.inputLuminosite.value * 20 / 100;
+        if (newLuminosite != this.luminosite) {
+            this.scene.getLightByName("Sun").intensity = newLuminosite;
+        }
+
+        // Check de la sensibilité
+        let newSensibiliteX = this.inputSensibiliteX.value * 100;
+        let newSensibiliteY = this.inputSensibiliteY.value * 100;
+        if (newSensibiliteX != this.sensibiliteX) {
+            this.scene.getCameraByName("TankRotateCamera").angularSensibilityY = newSensibiliteX;
+        }
+        if (newSensibiliteY != this.sensibiliteY) {
+            this.scene.getCameraByName("TankRotateCamera").angularSensibilityX = newSensibiliteY;
+        }
+    }
+
+
+/*
+
+            10 ===> 1000
+            50 ===> 5000
+            100 ==> 10000
+
+
+            10 =====> 9000
+            50 =====> 5000
+            100 ====> 1000
+
+
+
+*/
+
+
+
+
+
+
 
     // Actualise l'affichage des fps
     showFps(fps) {

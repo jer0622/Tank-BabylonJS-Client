@@ -42,7 +42,7 @@ async function startGame(canvasId) {
         let deltaTime = engine.getDeltaTime();
 
         // Actualisation des fps
-        parametre.showFps(engine.getFps().toFixed());
+        parametre.updateParametre(engine.getFps().toFixed());
 
         // Action du tank
         tank.checkActionTank(deltaTime);
