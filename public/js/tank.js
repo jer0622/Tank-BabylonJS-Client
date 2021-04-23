@@ -54,7 +54,7 @@ export default class Tank {
         const patronTank = BABYLON.MeshBuilder.CreateBox("patronPlayer", { width: 7, depth: 4, height: 4 }, scene);
         patronTank.isVisible = false;
         patronTank.checkCollisions = true;
-        patronTank.position = new BABYLON.Vector3(30, 30, 0);
+        patronTank.position = new BABYLON.Vector3(30, 15, 0);
         //patronTank.ellipsoid = new BABYLON.Vector3(3.6, 2, 3.6);
         patronTank.ellipsoid = new BABYLON.Vector3(1, 1.5, 1);
         patronTank.ellipsoidOffset = new BABYLON.Vector3(0, 1.5, 0);
@@ -225,9 +225,13 @@ export default class Tank {
         crosshairMat2.specularColor = new BABYLON.Color3.Blue();
         
 
+        let posX = this.tank.position.x;
+        let posY = this.tank.position.y;
+        let posZ = this.tank.position.z;
+
         // Viseur qui suit la tourelle
         this.crosshairTourelle1 = BABYLON.MeshBuilder.CreateBox("crossTourelle1", {height: .5, width: .1, depth: .01}, scene);
-        this.crosshairTourelle1.position = new BABYLON.Vector3(29.1, 35.2, 4.6);
+        this.crosshairTourelle1.position = new BABYLON.Vector3(posX-0.9, posY+5.2, posZ+4.6);
         this.crosshairTourelle1.rotation.x = 0.3
         this.crosshairTourelle1.isVisible = true;
         this.crosshairTourelle1.isPickable = false;
@@ -235,7 +239,7 @@ export default class Tank {
         this.crosshairTourelle1.material = crosshairMat2;    
         
         this.crosshairTourelle2 = BABYLON.MeshBuilder.CreateBox("Tourelle2", {height: .5, width: .1, depth: .01}, scene);
-        this.crosshairTourelle2.position = new BABYLON.Vector3(29.3, 35.5, 4.6);
+        this.crosshairTourelle2.position = new BABYLON.Vector3(posX-0.7, posY+5.5, posZ+4.6);
         this.crosshairTourelle2.rotation.z = Math.PI / 2;
         this.crosshairTourelle2.rotation.x = 0.3;
         this.crosshairTourelle2.isVisible = true;
@@ -244,7 +248,7 @@ export default class Tank {
         this.crosshairTourelle2.material = crosshairMat2;
 
         this.crosshairTourelle3 = BABYLON.MeshBuilder.CreateBox("Tourelle3", {height: .5, width: .1, depth: .01}, scene);
-        this.crosshairTourelle3.position = new BABYLON.Vector3(30.7, 34.3, 4.6);
+        this.crosshairTourelle3.position = new BABYLON.Vector3(posX+0.7, posY+4.3, posZ+4.6);
         this.crosshairTourelle3.rotation.x = 0.3
         this.crosshairTourelle3.isVisible = true;
         this.crosshairTourelle3.isPickable = false;
@@ -252,7 +256,7 @@ export default class Tank {
         this.crosshairTourelle3.material = crosshairMat2;    
          
         this.crosshairTourelle4 = BABYLON.MeshBuilder.CreateBox("Tourelle4", {height: .5, width: .1, depth: .01}, scene);
-        this.crosshairTourelle4.position = new BABYLON.Vector3(30.5, 34, 4.6);
+        this.crosshairTourelle4.position = new BABYLON.Vector3(posX+0.5, posY+4, posZ+4.6);
         this.crosshairTourelle4.rotation.z = Math.PI / 2;
         this.crosshairTourelle4.rotation.x = 0.3;
         this.crosshairTourelle4.isVisible = true;
@@ -287,7 +291,7 @@ export default class Tank {
 
         // Creation d'une box pour émettre les particule lors d'un tire 
         var particleEmitter = BABYLON.MeshBuilder.CreateBox("particleEmitter", {size: 0.05}, scene);
-        particleEmitter.position = new BABYLON.Vector3(29.9, 32.95, 4.6);
+        particleEmitter.position = new BABYLON.Vector3(this.tank.position.x-0.1, this.tank.position.y+2.95, this.tank.position.z+4.6);
         particleEmitter.rotation.x = BABYLON.Tools.ToRadians(78.5);
         particleEmitter.isVisible = false;
         particleEmitter.setParent(this.meshCannon);
