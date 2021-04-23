@@ -10,8 +10,20 @@ let scene;
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", async function() {
-    await startGame("renderCanvas");
+    let divButton = document.getElementById("buttonPlay");
+    divButton.onclick = async () => {
+        let username = document.getElementById("username");
+        if (username.value != "") {
+            let divHome = document.getElementById("HOME").style.display = "none";
+            let divGame = document.getElementById("GAME").style.display = "block";
+            await startGame("renderCanvas");
+        }
+        else {
+            alert("Veuillez saisir votre nom d'utilisateur")
+        }
+    }
 }, false);
+
 
 
 async function startGame(canvasId) {

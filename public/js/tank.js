@@ -167,19 +167,6 @@ export default class Tank {
             }
         }
 
-        if (diff > Math.PI/2 || -diff < -Math.PI/2) {
-            this.crosshairTourelle1.isVisible = false;
-            this.crosshairTourelle2.isVisible = false;
-            this.crosshairTourelle3.isVisible = false;
-            this.crosshairTourelle4.isVisible = false;
-        }
-        else {
-            this.crosshairTourelle1.isVisible = true;
-            this.crosshairTourelle2.isVisible = true;
-            this.crosshairTourelle3.isVisible = true;
-            this.crosshairTourelle4.isVisible = true;
-        }
-
         this.meshCannon.rotation.x = -this.camera.beta - 3.7;
     }
 
@@ -271,7 +258,7 @@ export default class Tank {
         this.crosshairTourelle4.isVisible = true;
         this.crosshairTourelle4.isPickable = false;
         this.crosshairTourelle4.setParent(this.meshCannon);
-        this.crosshairTourelle4.material = crosshairMat2; 
+        this.crosshairTourelle4.material = crosshairMat2;
     }
 
 

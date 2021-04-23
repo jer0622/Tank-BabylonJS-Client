@@ -6,6 +6,63 @@ html, body {
     padding: 0;
 }
 
+
+#HOME {
+    width: 100%; 
+    height: 100%;
+    background-image : url(/public/assets/images/background-tank.jpeg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#username::placeholder {
+    color: #838C90;
+    font-weight: bold;
+}
+
+#username:hover {
+    background-color: #2f4546;
+    border: 0.1em solid #158EC6;
+    border-radius: 0.12em;
+}
+
+#username {
+    border: 1px #158EC6;
+    box-shadow: 10px 5px 5px black;
+    background-color: #4b6e70;
+    text-align: center;
+    position: fixed;
+    height: 10%;
+    width: 25%;
+    left: 37.5%;
+    top: 8%;
+    font-size: xx-large;
+    color: black;
+    outline: none;
+}
+
+
+#buttonPlay {
+    background: no-repeat center/90% url(/public/assets/images/bouton_Play.png);
+    position: fixed;
+    height: 15%;
+    width: 25%;
+    left: 36%;
+    top: 20%;
+}
+
+
+#buttonPlay:hover {
+    background: no-repeat center/90% url(/public/assets/images/bouton_Play.png);
+    cursor: pointer;
+    position: fixed;
+    height: 15%;
+    width: 25%;
+    left: 36%;
+    top: 20%;
+}
+
+
 #renderCanvas {
     width: 100%;
     height: 100%;
@@ -93,6 +150,16 @@ html, body {
     background-repeat: no-repeat;
 }
 
+
+#weapons {
+    position: absolute;
+    top: 80%;
+    right: 1%;
+    width: 250px;
+    height: 120px;
+    opacity: 0.8;
+    background-color: #4b6e70;
+}
 
 
 

@@ -29,6 +29,7 @@ export default class Parametre {
         this.#listenerLockPointer();
         this.#listenerFullScreen();
         this.#listenerSettings();
+        this.#listenerHome();
     }
 
     updateParametre(fps) {
@@ -56,26 +57,6 @@ export default class Parametre {
             this.scene.getCameraByName("TankRotateCamera").angularSensibilityX = newSensibiliteY;
         }
     }
-
-
-/*
-
-            10 ===> 1000
-            50 ===> 5000
-            100 ==> 10000
-
-
-            10 =====> 9000
-            50 =====> 5000
-            100 ====> 1000
-
-
-
-*/
-
-
-
-
 
 
 
@@ -167,6 +148,14 @@ export default class Parametre {
             selectedButton.style.float = "right";
             divControle.style.display = "none";
             divOption.style.display = "block";
+        }
+    }
+
+    #listenerHome() {
+        this.divHome.onclick = () => {
+            this.scene.dispose();
+            let divGame = document.getElementById("GAME").style.display = "none";
+            let divHome = document.getElementById("HOME").style.display = "block";
         }
     }
 }
