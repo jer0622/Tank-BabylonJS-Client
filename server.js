@@ -37,8 +37,9 @@ var listOfPlayers = {};
 var listOfPosDepart = [
     {x: 30, y:15, z:0},
     {x: -20, y:15, z:0},
-    {x: 20},
-    {x: 25}
+    {x: 40, y:15, z:0},
+    {x: 30, y:15, z:-20},
+    {x: -20, y:15, z:-20}
 ];
 
 io.on('connection', (socket) => {
