@@ -2,10 +2,13 @@ import {modulo} from "./utilitaire.js"
 
 export default class Tank {
 
-    async build(scene, canvas) {
+    async build(scene, canvas, posDepart) {
         // La game, la scene, et le canvas
         this.scene = scene;
         this.canvas = canvas;
+
+        // Information sur la position et rotation du tank sur la map
+        this.infoTank = posDepart;
 
         // Récupération des div html
         this.divlife = document.getElementById("life");
@@ -46,15 +49,18 @@ export default class Tank {
 
         // Check des armes du tank
         this.#checkWeapons();
+
+        // Met à jour la position du tank pour envoyer au server 
+        this.#updatePosTank();
     }
 
     // Crée le Tank
     async #createTank(scene) {
         // Le "patron" du personnage
-        const patronTank = BABYLON.MeshBuilder.CreateBox("patronPlayer", { width: 7, depth: 4, height: 4 }, scene);
+        const patronTank = BABYLON.MeshBuilder.CreateBox("patronPlayer", { width: 5, depth: 5, height: 3.5 }, scene);
         patronTank.isVisible = false;
         patronTank.checkCollisions = true;
-        patronTank.position = new BABYLON.Vector3(30, 15, 0);
+        patronTank.position = new BABYLON.Vector3(this.infoTank.x, this.infoTank.y, this.infoTank.z);
         //patronTank.ellipsoid = new BABYLON.Vector3(3.6, 2, 3.6);
         patronTank.ellipsoid = new BABYLON.Vector3(1, 1.5, 1);
         patronTank.ellipsoidOffset = new BABYLON.Vector3(0, 1.5, 0);
@@ -66,15 +72,20 @@ export default class Tank {
 
         let allMeshes = tank.getChildMeshes();
         allMeshes.forEach(m => {
-            if (m.name == "Cannon" || m.name == "Tourelle") {
+            if (m.name == "Cannon") {
                 m.rotation = m.rotationQuaternion.toEulerAngles();
+                this.meshCannon = m;
+            }
+            if (m.name == "Tourelle") {
+                m.rotation = m.rotationQuaternion.toEulerAngles();
+                this.meshTourelle = m;
             }
             m.metadata = "tank";
         });
 
         // On récupère les mesh du cannon et de la tourelle (pour tirer et déplacer la tourelle)
-        this.meshCannon = this.scene.getMeshByName("Cannon");
-        this.meshTourelle = this.scene.getMeshByName("Tourelle");
+        //this.meshCannon = this.scene.getMeshByName("Cannon");
+        //this.meshTourelle = this.scene.getMeshByName("Tourelle");
         this.meshCannon.rotateY = 0;
 
         // On défini le patron comme parent au tank
@@ -95,7 +106,7 @@ export default class Tank {
         camera.angularSensibilityY = 2000;
 
         camera.upperBetaLimit = Math.PI / 2.3;
-        camera.lowerBetaLimit = Math.PI / 4;
+        camera.lowerBetaLimit = Math.PI / 3;
 
         camera.upperRadiusLimit = 30;
         camera.lowerRadiusLimit = 15;
@@ -155,7 +166,7 @@ export default class Tank {
             this.meshTourelle.rotation.y += diffMod/1000;
         }
         else {
-            if (diffMod > 0.04) {
+            if (diffMod > 0.02) {
                 if (Math.abs(diffMod) > Math.PI) {
                     this.meshCannon.rotation.y += relativeRotate;
                     this.meshTourelle.rotation.y += relativeRotate;
@@ -167,7 +178,34 @@ export default class Tank {
             }
         }
 
-        this.meshCannon.rotation.x = -this.camera.beta - 3.7;
+        this.meshCannon.rotation.x = -this.camera.beta - 3.5;
+    }
+
+
+    #updatePosTank() {
+        // Position
+        this.infoTank.x = this.tank.position.x;
+        this.infoTank.y = this.tank.position.y;
+        this.infoTank.z = this.tank.position.z;
+
+        // Rotation
+        this.infoTank.rx = this.tank.rotation.x;
+        this.infoTank.ry = this.tank.rotation.y;
+        this.infoTank.rz = this.tank.rotation.z;
+
+        // rotation tourelle et cannon
+        this.infoTank.tourelleRy = this.meshTourelle.rotation.y;
+        this.infoTank.cannonRx = this.meshCannon.rotation.x;
+        this.infoTank.cannonRy = this.meshCannon.rotation.y;
+
+        // Vie du tank
+        this.infoTank.life = this.life;
+
+        // Si le tank tire
+        this.infoTank.fire = false;
+        if (this.tireEnable === false) {
+            this.infoTank.fire = true;
+        }
     }
 
 
@@ -205,14 +243,14 @@ export default class Tank {
 
         // Viseur qui suit la caméra
         this.crosshairCameraVertical = BABYLON.MeshBuilder.CreateBox("crossCamV", {height: .7, width: .06, depth: .01}, scene);
-        this.crosshairCameraVertical.position = new BABYLON.Vector3(0, 2.8, 20);
+        this.crosshairCameraVertical.position = new BABYLON.Vector3(-0.1, 4, 20);
         this.crosshairCameraVertical.rotation.z = Math.PI / 2;
         this.crosshairCameraVertical.isPickable = false;
         this.crosshairCameraVertical.parent = this.camera;
         this.crosshairCameraVertical.material = crosshairMat;
         
         this.crosshairCameraHorizontal = BABYLON.MeshBuilder.CreateBox("crossCamH", {height: .7, width: .06, depth: .01}, scene);
-        this.crosshairCameraHorizontal.position = new BABYLON.Vector3(0, 2.8, 20);
+        this.crosshairCameraHorizontal.position = new BABYLON.Vector3(-0.1, 4, 20);
         this.crosshairCameraHorizontal.isPickable = false;
         this.crosshairCameraHorizontal.parent = this.camera;
         this.crosshairCameraHorizontal.material = crosshairMat;
@@ -231,15 +269,15 @@ export default class Tank {
 
         // Viseur qui suit la tourelle
         this.crosshairTourelle1 = BABYLON.MeshBuilder.CreateBox("crossTourelle1", {height: .5, width: .1, depth: .01}, scene);
-        this.crosshairTourelle1.position = new BABYLON.Vector3(posX-0.9, posY+5.2, posZ+4.6);
+        this.crosshairTourelle1.position = new BABYLON.Vector3(posX-1, posY+7.4, posZ+4.6);
         this.crosshairTourelle1.rotation.x = 0.3
         this.crosshairTourelle1.isVisible = true;
         this.crosshairTourelle1.isPickable = false;
         this.crosshairTourelle1.setParent(this.meshCannon);
-        this.crosshairTourelle1.material = crosshairMat2;    
+        this.crosshairTourelle1.material = crosshairMat2;
         
         this.crosshairTourelle2 = BABYLON.MeshBuilder.CreateBox("Tourelle2", {height: .5, width: .1, depth: .01}, scene);
-        this.crosshairTourelle2.position = new BABYLON.Vector3(posX-0.7, posY+5.5, posZ+4.6);
+        this.crosshairTourelle2.position = new BABYLON.Vector3(posX-0.8, posY+7.7, posZ+4.6);
         this.crosshairTourelle2.rotation.z = Math.PI / 2;
         this.crosshairTourelle2.rotation.x = 0.3;
         this.crosshairTourelle2.isVisible = true;
@@ -248,7 +286,7 @@ export default class Tank {
         this.crosshairTourelle2.material = crosshairMat2;
 
         this.crosshairTourelle3 = BABYLON.MeshBuilder.CreateBox("Tourelle3", {height: .5, width: .1, depth: .01}, scene);
-        this.crosshairTourelle3.position = new BABYLON.Vector3(posX+0.7, posY+4.3, posZ+4.6);
+        this.crosshairTourelle3.position = new BABYLON.Vector3(posX+0.6, posY+6.5, posZ+4.6);
         this.crosshairTourelle3.rotation.x = 0.3
         this.crosshairTourelle3.isVisible = true;
         this.crosshairTourelle3.isPickable = false;
@@ -256,7 +294,7 @@ export default class Tank {
         this.crosshairTourelle3.material = crosshairMat2;    
          
         this.crosshairTourelle4 = BABYLON.MeshBuilder.CreateBox("Tourelle4", {height: .5, width: .1, depth: .01}, scene);
-        this.crosshairTourelle4.position = new BABYLON.Vector3(posX+0.5, posY+4, posZ+4.6);
+        this.crosshairTourelle4.position = new BABYLON.Vector3(posX+0.4, posY+6.2, posZ+4.6);
         this.crosshairTourelle4.rotation.z = Math.PI / 2;
         this.crosshairTourelle4.rotation.x = 0.3;
         this.crosshairTourelle4.isVisible = true;
@@ -302,19 +340,21 @@ export default class Tank {
         smokeBlast.targetStopDuration = 0.2;
         smokeBlast.stop();
         this.smokeBlast = smokeBlast;
+
+        // Div pour le nombre d'obus
+        this.divNbObus = document.getElementById("nbObus");
     }
 
     // Permet au tank de tirer
     #checkWeapons() {
         if (this.axisMovement[4] === true && this.tireEnable === true) {
             this.smokeBlast.start();    // Lance l'animation des particules
-            var cannonBallClone = this.cannonBall.clone("cannonBallClone")
+            var cannonBallClone = this.cannonBall.clone("cannonBallClone");
             cannonBallClone.visibility = 1;
             cannonBallClone.checkCollisions = false;
             cannonBallClone.position = this.meshCannon.absolutePosition;
             cannonBallClone.physicsImpostor = new BABYLON.PhysicsImpostor(cannonBallClone, BABYLON.PhysicsImpostor.SphereImpostor, {mass:2, friction:0.5, restitution:0}, this.scene);
-            cannonBallClone.physicsImpostor.applyImpulse(this.meshCannon.up.scale(140), BABYLON.Vector3.Zero());
-            cannonBallClone.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 20, 0), BABYLON.Vector3.Zero());
+            cannonBallClone.physicsImpostor.applyImpulse(this.meshCannon.up.scale(125), BABYLON.Vector3.Zero());
                             
             // Crée un gestionnaire d'action pour cannonBallClone
             cannonBallClone.actionManager = new BABYLON.ActionManager(this.scene);
@@ -333,8 +373,10 @@ export default class Tank {
 
             // Met le tir a false et démare le timer
             this.tireEnable = false;
+            this.divNbObus.innerHTML = "0";
             setTimeout(() => {
                 this.tireEnable = true;
+                this.divNbObus.innerHTML = "1";
             }, 3000);
         }
     }

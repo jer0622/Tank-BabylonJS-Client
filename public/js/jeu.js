@@ -1,32 +1,25 @@
 import Tank from "./tank.js";
 import {loadMap} from "./map.js";
 import Parametre from "./parametre.js"
+import Ennemi from "./ennemi.js";
 
 
 let canvas;
 let engine;
 let scene;
 
+let username;
 
-// Page entièrement chargé, on lance le jeu
-document.addEventListener("DOMContentLoaded", async function() {
-    let divButton = document.getElementById("buttonPlay");
-    divButton.onclick = async () => {
-        let username = document.getElementById("username");
-        if (username.value != "") {
-            let divHome = document.getElementById("HOME").style.display = "none";
-            let divGame = document.getElementById("GAME").style.display = "block";
-            await startGame("renderCanvas");
-        }
-        else {
-            alert("Veuillez saisir votre nom d'utilisateur")
-        }
-    }
-}, false);
+let ennemis = {};
+export let listOfPlayers;
 
+export async function startGame(canvasId, user, listOfPlayersDepart) {
+    // on stock l'username du joueur
+    username = user;
 
+    // Les informations de tous les joueur
+    listOfPlayers = listOfPlayersDepart;
 
-async function startGame(canvasId) {
     // Canvas et Engine défini ici
     canvas = document.getElementById(canvasId);
     engine = new BABYLON.Engine(canvas, true);
@@ -42,23 +35,53 @@ async function startGame(canvasId) {
 
     // On crée le tank (le joueur principale)
     let tank = new Tank();
-    await tank.build(scene, canvas);
+    await tank.build(scene, canvas, listOfPlayers[username]);
+
+    // On crée les autres joueurs (les ennemis)
+    for (let player in listOfPlayers) {
+        if (player != username) {
+            let ennemi = new Ennemi();
+            await ennemi.build(scene, canvas, player, listOfPlayers[player]);
+            ennemis[player] = ennemi;
+        }
+    }
 
     // Initialise les paramètre (affichage des fps, jeu en pause, etc...)
     let parametre = new Parametre(scene, canvas);
-
     
     // Permet au jeu de tourner
-    engine.runRenderLoop(() => {
-        // On récupère le deltaTime
-        let deltaTime = engine.getDeltaTime();
-
+    engine.runRenderLoop(async () => {
         // Actualisation des fps
         parametre.updateParametre(engine.getFps().toFixed());
 
-        // Action du tank
-        tank.checkActionTank(deltaTime);
+        // Action du tank (le joueur principale) et update de ses positions
+        tank.checkActionTank(engine.getDeltaTime());
+        listOfPlayers[username] = tank.infoTank;
 
+        // Mise à jour de la position des autres joueurs
+        for (let player in listOfPlayers) {
+            if (player != username) {
+                if (ennemis[player] === undefined) {
+                    ennemis[player] = "";               // Pour ne pas en crée 2
+                    let ennemi = new Ennemi();
+                    await ennemi.build(scene, canvas, player, listOfPlayers[player]);
+                    ennemis[player] = ennemi;
+                }
+                else {
+                    if (ennemis[player] != undefined)
+                        ennemis[player].update(listOfPlayers[player]);
+                }
+            }
+        }
+
+        // Supréssion des joueur déconnecté
+        for (let player in ennemis) {
+            if (!Object.keys(listOfPlayers).includes(player)) {
+                ennemis[player].delete();
+                delete ennemis[player];
+            }
+        }
+        //console.log(Object.keys(ennemis));
 
         scene.render();
     });
@@ -70,6 +93,11 @@ async function startGame(canvasId) {
             engine.resize();
         }
     }, false);
+}
+
+// Setter de ListOfPlayers
+export function setListOfPlayers(newList) {
+    listOfPlayers = newList;
 }
 
 

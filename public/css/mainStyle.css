@@ -4,16 +4,55 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: 'Arial';
 }
 
 
 #HOME {
     width: 100%; 
     height: 100%;
-    background-image : url(/public/assets/images/background-tank.jpeg);
+    background-image : url(../assets/images/background-tank.jpeg);
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+
+
+
+#users {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 210px;
+    height: 100%;
+}
+
+
+.listJoueur {
+    position: absolute;
+    background-image: url("../assets/images/bande-player.svg");
+    margin-top: 2px;
+    padding: 8px;
+    color: #E9E4C6;
+    font-size: medium;
+    width: 100%;
+}
+
+
+
+#fps {
+    position: absolute;
+    background-color: black;
+    border: 2px solid red;
+    text-align: center;
+    font-size: 16px;
+    color: white;
+    top: 15px;
+    left: 900px;
+    width: 60px;
+    height: 20px;
+}
+
 
 #username::placeholder {
     color: #838C90;
@@ -43,7 +82,7 @@ html, body {
 
 
 #buttonPlay {
-    background: no-repeat center/90% url(/public/assets/images/bouton_Play.png);
+    background: no-repeat center/90% url(../assets/images/bouton_Play.png);
     position: fixed;
     height: 15%;
     width: 25%;
@@ -53,7 +92,7 @@ html, body {
 
 
 #buttonPlay:hover {
-    background: no-repeat center/90% url(/public/assets/images/bouton_Play.png);
+    background: no-repeat center/90% url(../assets/images/bouton_Play_hover.png);
     cursor: pointer;
     position: fixed;
     height: 15%;
@@ -68,18 +107,7 @@ html, body {
     height: 100%;
 }
 
-#fps {
-    position: absolute;
-    background-color: black;
-    border: 2px solid red;
-    text-align: center;
-    font-size: 16px;
-    color: white;
-    top: 15px;
-    left: 10px;
-    width: 60px;
-    height: 20px;
-}
+
 
 .buttonParam {
     background-size: contain;
@@ -91,42 +119,42 @@ html, body {
 }
 
 #fullScreen {
-    background-image: url(/public/assets/images/fullScreen.svg);
+    background-image: url(../assets/images/fullScreen.svg);
     right: 15px;
 }
 
 #fullScreen:hover {
-    background-image: url(/public/assets/images/fullScreen-hover.svg);
+    background-image: url(../assets/images/fullScreen-hover.svg);
     right: 15px;
 }
 
 #minimisedScreen {
-    background-image: url(/public/assets/images/minimisedScreen.svg);
+    background-image: url(../assets/images/minimisedScreen.svg);
     right: 15px;
 }
 
 #minimisedScreen:hover {
-    background-image: url(/public/assets/images/minimisedScreen-hover.svg);
+    background-image: url(../assets/images/minimisedScreen-hover.svg);
     right: 15px;
 }
 
 #settings {
-    background-image: url(/public/assets/images/settings.svg);
+    background-image: url(../assets/images/settings.svg);
     right: 70px;
 }
 
 #settings:hover {
-    background-image: url(/public/assets/images/settings-hover.svg);
+    background-image: url(../assets/images/settings-hover.svg);
     right: 70px;
 }
 
 #home {
-    background-image: url(/public/assets/images/home.svg);
+    background-image: url(../assets/images/home.svg);
     right: 125px;
 }
 
 #home:hover {
-    background-image: url(/public/assets/images/home-hover.svg);
+    background-image: url(../assets/images/home-hover.svg);
     right: 125px;
 }
 
@@ -146,17 +174,17 @@ html, body {
     left: 1%;
     width: 280px;
     height: 150px;
-    background-image: url(/public/assets/images/lifeBar/lifeBar_20.png);
+    background-image: url(../assets/images/lifeBar/lifeBar_20.png);
     background-repeat: no-repeat;
 }
 
 
 #weapons {
     position: absolute;
-    top: 80%;
+    top: 85%;
     right: 1%;
-    width: 250px;
-    height: 120px;
+    width: 220px;
+    height: 100px;
     opacity: 0.8;
     background-color: #4b6e70;
 }
@@ -178,7 +206,7 @@ html, body {
 }
 
 #closeButtonSettings {
-    background-image: url(/public/assets/images/close.svg);
+    background-image: url(../assets/images/close.svg);
     right: 15px;
 }
 
