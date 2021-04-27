@@ -18,9 +18,8 @@ Pour les fonctionnalités manquantes, il y a la collision avec les obus vis-à-v
 En vous souhaitant une bonne game :-)
 
 ## Démonstration
-<p align="center">
-<img src="https://i.ibb.co/cL9JV9z/D-monstration.gif" alt="Démonstration du jeu" width="600px">
-</p>
+[Démonstration du jeu](https://i.ibb.co/cL9JV9z/D-monstration.gif)
+
 
 ## Sources des objets blender utilisés :
  - [Pont](https://www.turbosquid.com/fr/3d-models/free-max-model-bridge/789884)
