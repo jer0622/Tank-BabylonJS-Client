@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 async function init() {
     // Initialise le socket
-    socket = io.connect();
+    let url = "https://tank-server-babylonjs.herokuapp.com/";
+    socket = io.connect(url, { transports: ['websocket'], upgrade:false});
 
     // Récupération des div
     let users = document.getElementById("users");
