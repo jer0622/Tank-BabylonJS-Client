@@ -11,6 +11,8 @@ Jeremy HIRTH DAUMAS
 ## Résumé :
 Le jeu est disponible sur heroku [ici](https://tank-client-babylonjs.herokuapp.com/).
 
+Dépôt de la partie server : https://github.com/jer0622/Tank-BabylonJS-Server
+
 La version actuelle du jeu implémente un multijoueur simple (sans prédiction, ni réconciliation) qui permet pour le moment de voir se déplacer les chars ennemis, on voit également pivoter la tourelle et le cannons de ceux-ci. Coté fonctionnalité on a la possibilité de mettre le jeu en plein écran ou de revenir à l’écran d’accueil quand on le souhaite. Il y a également un bouton paramètre qui récapitule les commandes du jeu, et qui permet de changer des options du jeu, comme le volume générale, la luminosité, ou encore la sensibilité de la souris.
 
 Pour les fonctionnalités manquantes, il y a la collision avec les obus vis-à-vis des autres chars (ce qui permettrai de de pouvoir les détruire et donc d’avoir un vrai but dans le jeu). Il faudrait aussi un moteur physique ce qui permettrait de rendre les déplacements du char plus réelle. Et enfin faire une vrai map pour avoir un bon gameplay (notamment l’impossibilité de sortir de celle-ci). Je compte prochainement implémenter ces fonctionnalités.
